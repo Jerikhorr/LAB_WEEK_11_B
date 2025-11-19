@@ -47,15 +47,12 @@ class MainActivity : AppCompatActivity() {
             )
 
         // Initialize the activity result launcher
-        // .TakePicture() and .CaptureVideo() are the built-in contracts
-        // They are used to capture images and videos
-        // The result will be stored in the URI passed to the launcher
         takePictureLauncher =
             registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
                 if (success) {
                     providerFileManager.insertImageToStore(photoInfo)
                 } else {
-                    // Handle cancellation or failure if necessary
+                    // Optional: Handle cancellation
                 }
             }
 
@@ -64,21 +61,15 @@ class MainActivity : AppCompatActivity() {
                 if (success) {
                     providerFileManager.insertVideoToStore(videoInfo)
                 } else {
-                    // Handle cancellation or failure if necessary
+                    // Optional: Handle cancellation
                 }
             }
 
-        // Setup button listeners
-        // Note: The IDs are referenced as R.id.photo_button and R.id.video_button
-        // but based on your activity_main.xml, they should be take_photo_button and record_video_button.
-        // I will use the correct IDs from the XML here.
-
+        // Setup button listeners (using correct IDs from activity_main.xml)
         findViewById<android.widget.Button>(R.id.take_photo_button).setOnClickListener {
             // Set the flag to indicate that the user is capturing a photo
             isCapturingVideo = false
             // Check the storage permission
-            // If the permission is granted, open the camera
-            // Otherwise, request the permission
             checkStoragePermission {
                 openImageCapture()
             }
@@ -88,8 +79,6 @@ class MainActivity : AppCompatActivity() {
             // Set the flag to indicate that the user is capturing a video
             isCapturingVideo = true
             // Check the storage permission
-            // If the permission is granted, open the camera
-            // Otherwise, request the permission
             checkStoragePermission {
                 openVideoCapture()
             }
@@ -100,19 +89,21 @@ class MainActivity : AppCompatActivity() {
     private fun openImageCapture() {
         photoInfo =
             providerFileManager.generatePhotoUri(System.currentTimeMillis())
-        takePictureLauncher.launch(photoInfo?.uri)
+
+        // FIX: Use !! to assert that uri is not null, as we just assigned photoInfo
+        takePictureLauncher.launch(photoInfo!!.uri)
     }
 
     // Open the camera to capture a video
     private fun openVideoCapture() {
         videoInfo =
             providerFileManager.generateVideoUri(System.currentTimeMillis())
-        takeVideoLauncher.launch(videoInfo?.uri)
+
+        // FIX: Use !! to assert that uri is not null, as we just assigned videoInfo
+        takeVideoLauncher.launch(videoInfo!!.uri)
     }
 
     // Check the storage permission
-    // For Android 10 (Q) and above, the WRITE_EXTERNAL_STORAGE permission is not strictly required for MediaStore
-    // For Android 9 and below, the permission is required
     private fun checkStoragePermission(onPermissionGranted: () -> Unit) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             // Check for the WRITE_EXTERNAL_STORAGE permission

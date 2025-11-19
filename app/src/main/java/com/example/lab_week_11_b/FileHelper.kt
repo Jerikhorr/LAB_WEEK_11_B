@@ -8,9 +8,12 @@ import java.io.File
 
 class FileHelper(private val context: Context) {
 
+    // Define the FileProvider authority consistently
+    private val FILE_PROVIDER_AUTHORITY = context.packageName + ".fileprovider"
+
     fun getUriFromFile(file: File): Uri {
         return FileProvider.getUriForFile(
-            context, "com.example.lab_week_11_b.camera", file
+            context, FILE_PROVIDER_AUTHORITY, file // Using the consistent authority
         )
     }
 
